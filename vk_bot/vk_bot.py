@@ -6,17 +6,13 @@ from vk_bot import types
 
 
 class VkBot:
-    def __init__(self, token: str, group_id: int, api_v: str = '5.95'):
+    def __init__(self, token: str, group_id: int, api_v: str = '5.95', command_start='/'):
         """
 
         :param token: Токен группы
-        :type token: str
-
         :param group_id: Id группы
-        :type group_id: int
-
         :param api_v: Версия api ВКонтакте
-        :type api_v: str
+        :param command_start: Строка, с которой должна начинаться комманда
         """
         # TODO: Write description
         self.token = token
@@ -25,6 +21,10 @@ class VkBot:
 
         self.vk_api = vk_api.VkApi(token=token, api_version=api_v)
         self.api = self.vk_api.get_api()
+
+        self._message_handlers = []
+
+        self._command_start = command_start
 
         self._wait = None
         self._url = None
@@ -119,5 +119,61 @@ class VkBot:
 
         return 'ok'
 
+    @staticmethod
+    def _exec_task(task, *args, **kwargs):
+        task(*args, **kwargs)
+
     def _process_event(self, event):
-        pass
+        if event['type'] == 'message_new':
+            self._process_new_message(types.Message.from_dict(event['object']))
+
+    @staticmethod
+    def _build_handler_dict(handler, **filters):
+        return {
+            'function': handler,
+            'filters': filters
+        }
+
+    def message_handler(self, commands: list):
+        """
+
+        :param commands:
+        :return:
+        """
+
+        # TODO: Write description
+        def decorator(handler):
+            handler_dict = self._build_handler_dict(
+                handler,
+                commands=commands
+            )
+            self._message_handlers.append(handler_dict)
+
+            return handler
+
+        return decorator
+
+    @staticmethod
+    def _get_command(text: str, command_start: str):
+        if text[:len(command_start)] == command_start:
+            return text.split()[0][len(command_start):]
+
+    def _test_message_handler(self, message_handler, message: types.Message):
+        test_cases = {
+            'commands': lambda msg: self._get_command(message.text, self._command_start) in filter_value
+        }
+
+        for filter, filter_value in message_handler['filters'].items():
+            if filter_value is None:
+                continue
+
+            if not test_cases.get(filter, lambda msg: False)(message):
+                return False
+
+        return True
+
+    def _process_new_message(self, message: types.Message):
+        for message_handler in self._message_handlers:
+            if self._test_message_handler(message_handler, message):
+                self._exec_task(message_handler['function'], message)
+                break
