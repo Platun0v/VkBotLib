@@ -134,7 +134,7 @@ class VkBot:
             'filters': filters
         }
 
-    def message_handler(self, commands: list):
+    def message_handler(self, commands: list = None):
         """
 
         :param commands:
