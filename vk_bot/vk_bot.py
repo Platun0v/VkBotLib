@@ -134,10 +134,11 @@ class VkBot:
             'filters': filters
         }
 
-    def message_handler(self, commands: list = None):
+    def message_handler(self, commands: list = None, payload_commands: list = None):
         """
 
         :param commands:
+        :param payload_commands:
         :return:
         """
 
@@ -145,7 +146,8 @@ class VkBot:
         def decorator(handler):
             handler_dict = self._build_handler_dict(
                 handler,
-                commands=commands
+                commands=commands,
+                payload_commands=payload_commands,
             )
             self._message_handlers.append(handler_dict)
 
@@ -160,7 +162,8 @@ class VkBot:
 
     def _test_message_handler(self, message_handler, message: types.Message):
         test_cases = {
-            'commands': lambda msg: self._get_command(message.text, self._command_start) in filter_value
+            'commands': lambda msg: self._get_command(message.text, self._command_start) in filter_value,
+            'payload_commands': lambda msg: msg.payload_command in filter_value,
         }
 
         for filter, filter_value in message_handler['filters'].items():

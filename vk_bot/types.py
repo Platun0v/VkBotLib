@@ -10,9 +10,7 @@ class Message:
         from_id = obj['from_id']
         text = obj['text']
         attachments = obj['attachments']
-        payload = '{}'
-        if 'payload' in obj.keys():
-            payload = obj['payload']
+        payload = obj.get('payload', '{}')
         fwd_messages = ['fwd_messages']
 
         return cls(message_id, date, peer_id, from_id, text, attachments, payload,
@@ -29,6 +27,11 @@ class Message:
         self.text = text
         self.attachments = attachments
         self.payload = json.loads(payload)
+        self.payload_command = None
+        self.payload_data = None
+        if isinstance(self.payload, dict):
+            self.payload_command = self.payload.get('command')
+            self.payload_data = self.payload.get('data')
         self.fwd_messages = fwd_messages  # TODO: Process forward messages
 
 
