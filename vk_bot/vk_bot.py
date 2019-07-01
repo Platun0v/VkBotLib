@@ -1,3 +1,5 @@
+from random import randint
+
 import requests
 
 import vk_api
@@ -180,3 +182,18 @@ class VkBot:
             if self._test_message_handler(message_handler, message):
                 self._exec_task(message_handler['function'], message)
                 break
+
+    def send_message(self, peer_id=None, message=None, keyboard=None, attachment=None, **kwargs):
+        values = kwargs
+        if peer_id:
+            values['peer_id'] = peer_id
+        if message:
+            values['message'] = message
+        if keyboard:
+            values['keyboard'] = keyboard
+        if attachment:
+            values['attachment'] = attachment
+
+        values['random_id'] = randint(1, 2147483647)
+        return self.vk_api.method('messages.send', values)
+
