@@ -108,7 +108,7 @@ class VkBot:
         """
         # TODO: Write description
         if secret_string and 'secret' in request.keys():
-            if request['keys'] != secret_string:
+            if request['secret'] != secret_string:
                 return 'Bad request'
 
         if 'group_id' not in request.keys() or 'object' not in request.keys() or 'type' not in request.keys():
