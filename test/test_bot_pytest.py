@@ -29,3 +29,25 @@ def test_message_handler_payload(bot: vk_bot.VkBot):
     bot._process_new_message(msg)
 
     assert msg.text == 'got'
+
+
+def test_message_handler_regexp(bot: vk_bot.VkBot):
+    @bot.message_handler(regexp='((https?):((//)|(\\\\))+([\w\d:#@%/;$()~_?\+-=\\\.&](#!)?)*)')
+    def command_handler(message):
+        message.text = 'got'
+
+    msg = vk_bot.Message.from_dict(create_message(text='https://vk.com/'))
+    bot._process_new_message(msg)
+
+    assert msg.text == 'got'
+
+
+def test_message_handler_func(bot: vk_bot.VkBot):
+    @bot.message_handler(func=lambda msg: msg.text.find('lambda') != -1)
+    def command_handler(message):
+        message.text = 'got'
+
+    msg = vk_bot.Message.from_dict(create_message(text='lambda in message'))
+    bot._process_new_message(msg)
+
+    assert msg.text == 'got'
