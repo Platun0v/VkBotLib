@@ -1,4 +1,5 @@
 import json
+import html
 
 
 class Message:
@@ -24,7 +25,8 @@ class Message:
         self.date = date
         self.peer_id = peer_id
         self.from_id = from_id
-        self.text = text
+        self.text = html.unescape(text)
+        self.text_lower = self.text.lower()
         self.attachments = attachments
         self.payload = json.loads(payload)
         self.payload_command = None

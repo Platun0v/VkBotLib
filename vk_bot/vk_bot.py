@@ -1,4 +1,5 @@
 from random import randint
+import re
 
 import requests
 
@@ -8,7 +9,7 @@ from vk_bot import types
 
 
 class VkBot:
-    def __init__(self, token: str, group_id: int, api_v: str = '5.95', command_start='/'):
+    def __init__(self, token: str, group_id: int, api_v: str = '5.100', command_start='/'):
         """
 
         :param token: Токен группы
@@ -77,11 +78,10 @@ class VkBot:
 
         return []
 
-    def longpoll_server(self, wait=25):
+    def longpoll_server(self, wait: int = 25):
         """
 
         :param wait: Время ожидания
-        :type wait: int
         :return:
         """
         # TODO: Write description
@@ -136,11 +136,13 @@ class VkBot:
             'filters': filters
         }
 
-    def message_handler(self, commands: list = None, payload_commands: list = None):
+    def message_handler(self, commands: list = None, payload_commands: list = None, regexp=None, func=None):
         """
 
         :param commands:
         :param payload_commands:
+        :param regexp:
+        :param func:
         :return:
         """
 
@@ -150,6 +152,8 @@ class VkBot:
                 handler,
                 commands=commands,
                 payload_commands=payload_commands,
+                regexp=regexp,
+                func=func,
             )
             self._message_handlers.append(handler_dict)
 
@@ -164,8 +168,10 @@ class VkBot:
 
     def _test_message_handler(self, message_handler, message: types.Message):
         test_cases = {
-            'commands': lambda msg: self._get_command(message.text, self._command_start) in filter_value,
+            'commands': lambda msg: msg.text and self._get_command(message.text_lower, self._command_start) in filter_value,
             'payload_commands': lambda msg: msg.payload_command in filter_value,
+            'regexp': lambda msg: msg.text and re.search(filter_value, msg.text_lower),
+            'func': lambda msg: filter_value(msg),
         }
 
         for filter, filter_value in message_handler['filters'].items():
@@ -184,6 +190,7 @@ class VkBot:
                 break
 
     def send_message(self, peer_id=None, message=None, keyboard=None, attachment=None, **kwargs):
+        # TODO: Write Description
         values = kwargs
         if peer_id:
             values['peer_id'] = peer_id
