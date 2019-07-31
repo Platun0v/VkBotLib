@@ -91,6 +91,22 @@ class VkBot:
             for event in self._get_events_longpoll():
                 self._process_event(event)
 
+    def infinity_longpoll_server(self, wait: int = 25):
+        """
+
+        :param wait: Время ожидания
+        :return:
+        """
+        # TODO: Write description
+        self._wait = wait
+        self._update_longpoll_server()
+        while True:
+            try:
+                for event in self._get_events_longpoll():
+                    self._process_event(event)
+            except Exception:
+                self._update_longpoll_server()
+
     def callback_request(self, request: dict, confirm_string: str, secret_string: str = None):
         """
 
