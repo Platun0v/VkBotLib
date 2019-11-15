@@ -9,7 +9,7 @@ from vk_bot import types
 
 
 class VkBot:
-    def __init__(self, token: str, group_id: int, api_v: str = '5.100', command_start='/'):
+    def __init__(self, token: str, group_id: int, api_v: str = '5.103', command_start='/'):
         """
 
         :param token: Токен группы
@@ -106,36 +106,6 @@ class VkBot:
                     self._process_event(event)
             except Exception:
                 self._update_longpoll_server()
-
-    def callback_request(self, request: dict, confirm_string: str, secret_string: str = None):
-        """
-
-
-        :param request: Запрос к серверу отправленный ВКонтакте
-        :type request: dict
-
-        :param confirm_string: Строка для подтверждения адреса сервера
-        :type confirm_string: str
-
-        :param secret_string: Секретный ключ бота
-        :type secret_string: str
-
-        :return: Ответ для ВКонтакте
-        """
-        # TODO: Write description
-        if secret_string and 'secret' in request.keys():
-            if request['secret'] != secret_string:
-                return 'Bad request'
-
-        if 'group_id' not in request.keys() or 'object' not in request.keys() or 'type' not in request.keys():
-            return 'Bad request'
-
-        if request['type'] == 'confirmation':
-            return confirm_string
-        else:
-            self._process_event(request)
-
-        return 'ok'
 
     @staticmethod
     def _exec_task(task, *args, **kwargs):
