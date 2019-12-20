@@ -1,8 +1,8 @@
-import logging
 import logging.handlers
 
+
 LEVEL = logging.INFO
-FORMAT = '%(asctime)s [%(levelname)s] (%(filename)s:%(lineno)d) - %(name)s: "%(message)s"'
+FORMAT = logging.Formatter('%(asctime)s [%(levelname)s] (%(filename)s:%(lineno)d) - %(name)s: "%(message)s"')
 
 file_handler = logging.FileHandler('bot.log')
 file_handler.setLevel(LEVEL)
