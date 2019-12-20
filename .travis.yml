@@ -7,7 +7,3 @@ install:
   - pip install -r requirements_dev.txt
 script:
   - cd test && pytest
-
-after_success:
-  - pip install coveralls
-  - coveralls
