@@ -6,7 +6,7 @@ with open('README.md', encoding='utf-8') as f:
     long_description = f.read()
 
 setup(name='vk_bot',
-      version='0.0.1',
+      version='0.0.2',
 
       author='Platun0v',
       author_email='platun0v@protonmail.com',
