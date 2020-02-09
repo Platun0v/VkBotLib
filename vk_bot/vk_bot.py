@@ -6,6 +6,7 @@ import requests
 import vk_api
 
 from vk_bot import types
+from .logging import logger
 
 
 class VkBot:
@@ -104,7 +105,8 @@ class VkBot:
             try:
                 for event in self._get_events_longpoll():
                     self._process_event(event)
-            except Exception:
+            except Exception as e:
+                logger.error(e)
                 self._update_longpoll_server()
 
     @staticmethod
