@@ -9,4 +9,6 @@ install:
   - pip install -r requirements_dev.txt
 script:
   - python setup.py install
-  - cd test && pytest
+  - cd test && pytest --cov
+after_success:
+  - codecov
