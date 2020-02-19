@@ -1,12 +1,14 @@
 from random import randint
 import re
+import traceback
+import sys
 
 import requests
 
 import vk_api
 
 from vk_bot import types
-from .logging import logger
+from .logging import logger, log
 
 
 class VkBot:
@@ -107,6 +109,8 @@ class VkBot:
                     self._process_event(event)
             except Exception as e:
                 logger.error(e)
+                with open('errors.txt', 'a') as f:
+                    traceback.print_exc(file=f)
                 self._update_longpoll_server()
 
     @staticmethod
@@ -177,6 +181,7 @@ class VkBot:
                 self._exec_task(message_handler['function'], message)
                 break
 
+    @log
     def send_message(self, peer_id=None, message=None, keyboard=None, attachment=None, **kwargs):
         # TODO: Write Description
         values = kwargs
