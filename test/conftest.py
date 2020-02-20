@@ -11,5 +11,5 @@ import vk_bot
 def bot():
     token = os.getenv('VK_GROUP_TOKEN')
     group_id = os.getenv('GROUP_ID')
-    bot = vk_bot.VkBot(token=token, group_id=group_id)
+    bot = vk_bot.VkBot(token=token, group_id=group_id, command_start='!')
     return bot
