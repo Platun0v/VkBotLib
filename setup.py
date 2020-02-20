@@ -6,7 +6,7 @@ with open('README.md', encoding='utf-8') as f:
     long_description = f.read()
 
 setup(name='vk_bot',
-      version='0.0.2',
+      version='0.2.1',
 
       author='Platun0v',
       author_email='platun0v@protonmail.com',
@@ -24,8 +24,6 @@ setup(name='vk_bot',
       classifiers=[
           'Operating System :: OS Independent',
           'Programming Language :: Python :: 3',
-          'Programming Language :: Python :: 3.4',
-          'Programming Language :: Python :: 3.5',
           'Programming Language :: Python :: 3.6',
           'Programming Language :: Python :: 3.7',
           'License :: OSI Approved :: GNU General Public License v2 (GPLv2)',
