@@ -160,7 +160,7 @@ class VkBot:
 
     def _test_message_handler(self, message_handler, message: types.Message):
         test_cases = {
-            'commands': lambda msg: msg.text and self._get_command(message.text_lower, self._command_start) in filter_value,
+            'commands': lambda msg: msg.process_command(self._command_start) and msg.command in filter_value,
             'payload_commands': lambda msg: msg.payload_command in filter_value,
             'regexp': lambda msg: msg.text and re.search(filter_value, msg.text_lower),
             'func': lambda msg: filter_value(msg),

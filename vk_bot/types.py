@@ -25,8 +25,13 @@ class Message:
         self.date = date
         self.peer_id = peer_id
         self.from_id = from_id
-        self.text = html.unescape(text)
-        self.text_lower = self.text.lower()
+
+        text = html.unescape(text)
+        self.command = None
+
+        self.text = text
+        self.text_lower = text.lower()
+
         self.attachments = attachments
         self.payload = json.loads(payload)
         self.payload_command = None
@@ -35,6 +40,17 @@ class Message:
             self.payload_command = self.payload.get('command')
             self.payload_data = self.payload.get('data')
         self.fwd_messages = fwd_messages  # TODO: Process forward messages
+
+    def process_command(self, command_start):
+        if self.text[0] == command_start:
+            sep = self.text.find(' ')
+            if sep == -1:
+                sep = len(self.text)
+            self.command = self.text[1:sep]  # Must go first!
+            self.text: str = self.text[sep + 1:]
+            self.text_lower = self.text.lower()
+            return True
+        return False
 
 
 class Attachments:
