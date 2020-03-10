@@ -5,8 +5,9 @@ from io import open
 with open('README.md', encoding='utf-8') as f:
     long_description = f.read()
 
-setup(name='vk_bot',
-      version='0.2.1',
+
+setup(name='VkBotLib',
+      version='0.3.0',
 
       author='Platun0v',
       author_email='platun0v@protonmail.com',
@@ -15,7 +16,7 @@ setup(name='vk_bot',
       description='Python Vk bot api',
       long_description=long_description,
       long_description_content_type="text/markdown",
-      license='GPL2',
+      license='Apache License, Version 2.0',
       keywords='vk bot api tools',
 
       packages=['vk_bot'],
@@ -26,6 +27,6 @@ setup(name='vk_bot',
           'Programming Language :: Python :: 3',
           'Programming Language :: Python :: 3.6',
           'Programming Language :: Python :: 3.7',
-          'License :: OSI Approved :: GNU General Public License v2 (GPLv2)',
+          'License :: OSI Approved :: Apache Software License',
       ]
       )
