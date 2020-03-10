@@ -2,6 +2,6 @@ from .vk_bot import VkBot
 from .types import *
 
 __author__ = 'platun0v'
-__version__ = '0.3.0'
+__version__ = '0.4.0'
 __email__ = 'platun0v@protonmail.com'
 
