@@ -61,7 +61,7 @@ def test_message_handler_payload(bot: vk_bot.VkBot):
 
 
 def test_message_handler_regexp(bot: vk_bot.VkBot):
-    @bot.message_handler(regexp='((https?):((//)|(\\\\))+([\w\d:#@%/;$()~_?\+-=\\\.&](#!)?)*)')
+    @bot.message_handler(regexp=r'((https?):((//)|(\\))+([\w\d:#@%/;$()~_?\+-=\\.&](#!)?)*)')
     def command_handler(message):
         message.text = 'got'
 

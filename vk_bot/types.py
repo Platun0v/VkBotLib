@@ -30,6 +30,7 @@ class Message:
         self.command = None
 
         self.text = text
+        self.raw_text = text
         self.text_lower = text.lower()
 
         self.attachments = attachments
@@ -41,16 +42,24 @@ class Message:
             self.payload_data = self.payload.get('data')
         self.fwd_messages = fwd_messages  # TODO: Process forward messages
 
-    def process_command(self, command_start):
-        if self.text[0] == command_start:
+    def _get_command_from_message(self, command_start):
+        if self.text_lower[0] == command_start:
             sep = self.text.find(' ')
             if sep == -1:
                 sep = len(self.text)
             self.command = self.text[1:sep]  # Must go first!
             self.text: str = self.text[sep + 1:]
             self.text_lower = self.text.lower()
-            return True
-        return False
+            return
+
+        self.command = ''
+
+    def process_command(self, command_start):
+        # TODO: Проверка, что command_start один символ. Проверка, что комманда является одним словом.
+        if self.command is None:
+            self._get_command_from_message(command_start)
+
+        return self.command
 
 
 class Attachments:
