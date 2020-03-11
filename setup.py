@@ -7,7 +7,7 @@ with open('README.md', encoding='utf-8') as f:
 
 
 setup(name='VkBotLib',
-      version='0.4.0',
+      version='0.4.1',
 
       author='Platun0v',
       author_email='platun0v@protonmail.com',
