@@ -2,7 +2,6 @@ import sys
 
 sys.path.append('../')
 
-import pytest
 import vk_bot
 
 
@@ -22,6 +21,21 @@ def test_message_handler_commands(bot: vk_bot.VkBot):
     bot._process_new_message(msg)
 
     assert msg.command == 'start' and msg.text == 'something' and msg.text_lower == 'got'
+
+
+def test_message_handler_commands_two_handlers(bot: vk_bot.VkBot):
+    @bot.message_handler(commands=['start'])
+    def command_handler(message):
+        message.text_lower = 'not got'
+
+    @bot.message_handler(commands=['help'])
+    def help_handler(message):
+        message.text_lower = 'got'
+
+    msg = vk_bot.Message.from_dict(create_message(text='!help something'))
+    bot._process_new_message(msg)
+
+    assert msg.command == 'help' and msg.text == 'something' and msg.text_lower == 'got'
 
 
 def test_message_handler_commands_no_text(bot: vk_bot.VkBot):
