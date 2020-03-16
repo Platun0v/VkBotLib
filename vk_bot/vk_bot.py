@@ -111,6 +111,7 @@ class VkBot:
                 logger.error(e)
                 with open('errors.txt', 'a') as f:
                     traceback.print_exc(file=f)
+                    f.write(f'\n{"=" * 30}\n')
                 self._update_longpoll_server()
 
     @staticmethod
