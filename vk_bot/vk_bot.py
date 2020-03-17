@@ -53,17 +53,17 @@ class VkBot:
         :return:
         """
         # TODO: Write description
-        self._wait = wait
-        self._update_longpoll_server()
+        self._longpoll.wait = wait
+        self._longpoll.update_longpoll_server()
         while True:
             try:
-                for event in self._get_events_longpoll():
+                for event in self._longpoll.get_events_longpoll():
                     self._process_event(event)
             except Exception as e:
                 logger.error(e)
                 with open('errors.txt', 'a') as f:
                     traceback.print_exc(file=f)
-                self._update_longpoll_server()
+                self._longpoll.update_longpoll_server()
 
     @staticmethod
     def _exec_task(task, *args, **kwargs):
