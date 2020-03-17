@@ -1,13 +1,13 @@
 import re
 import traceback
 from random import randint
+from typing import Optional, List, AnyStr, Callable
 
-import requests
 import vk_api
 
-from .logging import logger, log
 from vk_bot import types
-from .api import Api
+from .api import Api, LongPoll
+from .logging import logger, log
 
 
 class VkBot:
@@ -27,59 +27,11 @@ class VkBot:
         self.vk_api = vk_api.VkApi(token=token, api_version=api_v)
         self.api = self.vk_api.get_api()
         self.my_api = Api(self.token, api_v)
+        self._longpoll = LongPoll(self.my_api, group_id)
 
         self._message_handlers = []
 
         self._command_start = command_start
-
-        self._wait = None
-        self._url = None
-        self._key = None
-        self._server = None
-        self._ts = None
-
-    def _update_longpoll_server(self, update_ts=True):
-        values = {
-            'group_id': self.group_id
-        }
-        response = self.my_api.method('groups.getLongPollServer', values)
-
-        self._key = response['key']
-        self._server = response['server']
-
-        self._url = self._server
-
-        if update_ts:
-            self._ts = response['ts']
-
-    def _get_events_longpoll(self):
-        values = {
-            'act': 'a_check',
-            'key': self._key,
-            'ts': self._ts,
-            'wait': self._wait,
-        }
-
-        resp = requests.get(
-            self._url,
-            params=values,
-            timeout=self._wait + 10
-        ).json()
-
-        if 'failed' not in resp:
-            self._ts = resp['ts']
-            return resp['updates']
-
-        elif resp['failed'] == 1:
-            self._ts = resp['ts']
-
-        elif resp['failed'] == 2:
-            self._update_longpoll_server(update_ts=False)
-
-        elif resp['failed'] == 3:
-            self._update_longpoll_server()
-
-        return []
 
     def longpoll_server(self, wait: int = 25):
         """
@@ -88,10 +40,10 @@ class VkBot:
         :return:
         """
         # TODO: Write description
-        self._wait = wait
-        self._update_longpoll_server()
+        self._longpoll.wait = wait
+        self._longpoll.update_longpoll_server()
         while True:
-            for event in self._get_events_longpoll():
+            for event in self._longpoll.get_events_longpoll():
                 self._process_event(event)
 
     def infinity_longpoll_server(self, wait: int = 25):
@@ -128,7 +80,8 @@ class VkBot:
             'filters': filters
         }
 
-    def message_handler(self, commands: list = None, payload_commands: list = None, regexp=None, func=None):
+    def message_handler(self, commands: Optional[List] = None, payload_commands: Optional[List] = None,
+                        regexp: Optional[AnyStr] = None, func: Optional[Callable] = None):
         """
 
         :param commands:

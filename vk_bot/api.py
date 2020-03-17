@@ -2,8 +2,8 @@ from typing import Optional, Dict, Union, List
 
 import requests
 
-from .logging import logger
 from .exceptions import *
+from .logging import logger
 
 API_URL = 'https://api.vk.com/method/'
 
@@ -47,3 +47,58 @@ class Api:
 
     def method(self, method_name: str, params: Optional[Dict] = None, *, http_method: str = 'get') -> Union[Dict, List]:
         return self._make_request(method_name, params, http_method)
+
+
+class LongPoll:
+    def __init__(self, api: Api, group_id: int):
+        self.api = api
+        self.group_id = group_id
+
+        self.wait = None
+        self.url = None
+        self.key = None
+        self.server = None
+        self.ts = None
+
+    def update_longpoll_server(self, update_ts=True):
+        values = {
+            'group_id': self.group_id
+        }
+        response = self.api.method('groups.getLongPollServer', values)
+
+        self.key = response['key']
+        self.server = response['server']
+
+        self.url = self.server
+
+        if update_ts:
+            self.ts = response['ts']
+
+    def get_events_longpoll(self):
+        values = {
+            'act': 'a_check',
+            'key': self.key,
+            'ts': self.ts,
+            'wait': self.wait,
+        }
+
+        resp = self.api.session.get(
+            self.url,
+            params=values,
+            timeout=self.wait + 10
+        ).json()
+
+        if 'failed' not in resp:
+            self.ts = resp['ts']
+            return resp['updates']
+
+        elif resp['failed'] == 1:
+            self.ts = resp['ts']
+
+        elif resp['failed'] == 2:
+            self.update_longpoll_server(update_ts=False)
+
+        elif resp['failed'] == 3:
+            self.update_longpoll_server()
+
+        return []
