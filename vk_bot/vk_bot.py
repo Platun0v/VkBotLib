@@ -1,14 +1,13 @@
-from random import randint
 import re
 import traceback
-import sys
+from random import randint
 
 import requests
-
 import vk_api
 
-from vk_bot import types
 from .logging import logger, log
+from vk_bot import types
+from .api import Api
 
 
 class VkBot:
@@ -27,6 +26,7 @@ class VkBot:
 
         self.vk_api = vk_api.VkApi(token=token, api_version=api_v)
         self.api = self.vk_api.get_api()
+        self.my_api = Api(self.token, api_v)
 
         self._message_handlers = []
 
@@ -42,7 +42,7 @@ class VkBot:
         values = {
             'group_id': self.group_id
         }
-        response = self.vk_api.method('groups.getLongPollServer', values)
+        response = self.my_api.method('groups.getLongPollServer', values)
 
         self._key = response['key']
         self._server = response['server']
@@ -195,5 +195,4 @@ class VkBot:
             values['attachment'] = attachment
 
         values['random_id'] = randint(1, 2147483647)
-        return self.vk_api.method('messages.send', values)
-
+        return self.my_api.method('messages.send', values)
