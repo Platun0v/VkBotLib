@@ -1,3 +1,4 @@
+from .logging import logger, log
 from .vk_bot import VkBot
 from .types import *
 
