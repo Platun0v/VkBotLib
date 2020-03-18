@@ -1,5 +1,6 @@
 import json
 import html
+from typing import Optional
 
 
 class Message:
@@ -21,17 +22,17 @@ class Message:
                  fwd_messages, raw=None):
         self.raw = raw
 
-        self.id = message_id
-        self.date = date
-        self.peer_id = peer_id
-        self.from_id = from_id
+        self.id: int = message_id
+        self.date: int = date
+        self.peer_id: int = peer_id
+        self.from_id: int = from_id
 
-        text = html.unescape(text)
-        self.command = None
+        text: str = html.unescape(text)
+        self.command: Optional[str] = None
 
-        self.text = text
-        self.raw_text = text
-        self.text_lower = text.lower()
+        self.text: str = text
+        self.raw_text: str = text
+        self.text_lower: str = text.lower()
 
         self.attachments = attachments
         self.payload = json.loads(payload)
@@ -42,19 +43,19 @@ class Message:
             self.payload_data = self.payload.get('data')
         self.fwd_messages = fwd_messages  # TODO: Process forward messages
 
-    def _get_command_from_message(self, command_start):
+    def _get_command_from_message(self, command_start: str) -> None:
         if self.text_lower[0] == command_start:
             sep = self.text.find(' ')
             if sep == -1:
                 sep = len(self.text)
             self.command = self.text[1:sep]  # Must go first!
-            self.text: str = self.text[sep + 1:]
+            self.text = self.text[sep + 1:]
             self.text_lower = self.text.lower()
             return
 
         self.command = ''
 
-    def process_command(self, command_start):
+    def process_command(self, command_start: str) -> Optional[str]:
         # TODO: Проверка, что command_start один символ. Проверка, что комманда является одним словом.
         if self.command is None:
             self._get_command_from_message(command_start)

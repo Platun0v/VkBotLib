@@ -54,8 +54,8 @@ class LongPoll:
         self.api = api
         self.group_id = group_id
 
-        self.wait = None
-        self.url = None
+        self.wait: Optional[int] = None
+        self.url: Optional[str] = None
         self.key = None
         self.server = None
         self.ts = None

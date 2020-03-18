@@ -1,9 +1,9 @@
 import re
 import traceback
 from random import randint
-from typing import Optional, List, AnyStr, Callable
+from typing import Optional, List, Callable, Dict, Any
 
-import vk_api
+import vk_api  # type: ignore
 
 from vk_bot import types
 from .api import Api, LongPoll
@@ -25,11 +25,10 @@ class VkBot:
         self.api_v = api_v
 
         self.vk_api = vk_api.VkApi(token=token, api_version=api_v)
-        self.api = self.vk_api.get_api()
-        self.my_api = Api(self.token, api_v)
-        self._longpoll = LongPoll(self.my_api, group_id)
+        self.api = Api(self.token, api_v)
+        self._longpoll = LongPoll(self.api, group_id)
 
-        self._message_handlers = []
+        self._message_handlers: List[Dict] = []
 
         self._command_start = command_start
 
@@ -75,14 +74,14 @@ class VkBot:
             self._process_new_message(types.Message.from_dict(event['object']))
 
     @staticmethod
-    def _build_handler_dict(handler, **filters):
+    def _build_handler_dict(handler: Callable, **filters):
         return {
             'function': handler,
             'filters': filters
         }
 
-    def message_handler(self, commands: Optional[List] = None, payload_commands: Optional[List] = None,
-                        regexp: Optional[AnyStr] = None, func: Optional[Callable] = None):
+    def message_handler(self, commands: Optional[List[str]] = None, payload_commands: Optional[List] = None,
+                        regexp: Optional[str] = None, func: Optional[Callable[[types.Message], Any]] = None):
         """
 
         :param commands:
@@ -106,11 +105,6 @@ class VkBot:
             return handler
 
         return decorator
-
-    @staticmethod
-    def _get_command(text: str, command_start: str):
-        if text[:len(command_start)] == command_start:
-            return text.split()[0][len(command_start):]
 
     def _test_message_handler(self, message_handler, message: types.Message):
         test_cases = {
@@ -136,7 +130,8 @@ class VkBot:
                 break
 
     @log
-    def send_message(self, peer_id=None, message=None, keyboard=None, attachment=None, **kwargs):
+    def send_message(self, peer_id: Optional[int] = None, message: Optional[str] = None, keyboard=None, attachment=None,
+                     **kwargs):
         # TODO: Write Description
         values = kwargs
         if peer_id:
@@ -149,4 +144,4 @@ class VkBot:
             values['attachment'] = attachment
 
         values['random_id'] = randint(1, 2147483647)
-        return self.my_api.method('messages.send', values)
+        return self.api.method('messages.send', values)
