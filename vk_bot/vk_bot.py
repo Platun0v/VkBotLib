@@ -32,6 +32,9 @@ class VkBot:
 
         self._command_start = command_start
 
+        if len(command_start) != 1:
+            raise ValueError('`command_start` должен иметь длину 1')
+
     def longpoll_server(self, wait: int = 25):
         """
 

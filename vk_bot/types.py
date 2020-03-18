@@ -1,6 +1,6 @@
 import json
 import html
-from typing import Optional
+from typing import Optional, List, Any
 
 
 class Message:
@@ -13,7 +13,7 @@ class Message:
         text = obj['text']
         attachments = obj['attachments']
         payload = obj.get('payload', '{}')
-        fwd_messages = ['fwd_messages']
+        fwd_messages = obj['fwd_messages']
 
         return cls(message_id, date, peer_id, from_id, text, attachments, payload,
                    fwd_messages, obj)
@@ -34,14 +34,17 @@ class Message:
         self.raw_text: str = text
         self.text_lower: str = text.lower()
 
-        self.attachments = attachments
-        self.payload = json.loads(payload)
-        self.payload_command = None
+        self.attachments: List = attachments
+        self.fwd_messages: Optional[List[Message]] = None
+        if fwd_messages:
+            self.fwd_messages = [Message.from_dict(fwd_message) for fwd_message in fwd_messages]
+
+        self.payload: Any = json.loads(payload)
+        self.payload_command: Optional[str] = None
         self.payload_data = None
         if isinstance(self.payload, dict):
-            self.payload_command = self.payload.get('command')
-            self.payload_data = self.payload.get('data')
-        self.fwd_messages = fwd_messages  # TODO: Process forward messages
+            self.payload_command = self.payload.get('cmd')
+            self.payload_data = self.payload.get('dat')
 
     def _get_command_from_message(self, command_start: str) -> None:
         if self.text_lower[0] == command_start:
@@ -56,7 +59,6 @@ class Message:
         self.command = ''
 
     def process_command(self, command_start: str) -> Optional[str]:
-        # TODO: Проверка, что command_start один символ. Проверка, что комманда является одним словом.
         if self.command is None:
             self._get_command_from_message(command_start)
 

@@ -54,7 +54,7 @@ def test_message_handler_payload(bot: vk_bot.VkBot):
     def command_handler(message):
         message.text = 'got'
 
-    msg = vk_bot.Message.from_dict(create_message(payload='{"command": "start"}'))
+    msg = vk_bot.Message.from_dict(create_message(payload='{"cmd": "start"}'))
     bot._process_new_message(msg)
 
     assert msg.text == 'got'
