@@ -9,7 +9,7 @@ script:
   - cd test && pytest --cov && cd ..
   - python setup.py install
 after_success:
-  - codecov
+  - cd test && codecov
 deploy:
   provider: pypi
   user: $PYPI_USER
